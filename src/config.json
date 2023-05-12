@@ -1,0 +1,14 @@
+{
+  "dbName": "users-notification",
+  "dbConfig": {
+    "server": "DESARROLLO",
+    "options": {},
+    "authentication": {
+      "type": "default",
+      "options": {
+        "userName": "",
+        "password": ""
+      }
+    }
+  }
+}
