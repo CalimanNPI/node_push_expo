@@ -1,0 +1,87 @@
+<html>
+<head>
+    <title>iisnode logs</title>
+    <style type="text/css">
+        body
+        {
+            font-family: "Trebuchet MS" , Arial, Helvetica, sans-serif;
+        }
+        table
+        {
+            border-collapse: collapse;
+        }
+        td, th
+        {
+            border: 1px solid lightgray;
+            padding: 3px 7px 2px 7px;
+        }
+        th
+        {
+            text-align: left;
+            padding-top: 5px;
+            padding-bottom: 4px;
+            background-color: Gray;
+            color: #ffffff;
+        }
+        td.stderr
+        {
+            color: Red;
+        }
+    </style>
+</head>
+<body>
+    <table id="logFilesTable">
+        <tr>
+            <th>
+                Computer name
+            </th>
+            <th>
+                PID
+            </th>
+            <th>
+                Type
+            </th>
+            <th>
+                Created
+            </th>
+            <th>
+                Link
+            </th>
+        </tr>
+    </table>
+    <p id="lastUpdated"></p>
+    <script type="text/javascript">
+
+        // this is replaced with actual data at runtime by code in interceptor.js
+        var logFiles = [{"file":"DESARROLLO-10792-stderr-1690487714219.txt","computername":"DESARROLLO","pid":10792,"type":"stderr","created":1690487714219},{"file":"DESARROLLO-10792-stdout-1690487714213.txt","computername":"DESARROLLO","pid":10792,"type":"stdout","created":1690487714213},{"file":"DESARROLLO-11880-stderr-1690490083005.txt","computername":"DESARROLLO","pid":11880,"type":"stderr","created":1690490083005},{"file":"DESARROLLO-11880-stdout-1690490083000.txt","computername":"DESARROLLO","pid":11880,"type":"stdout","created":1690490083000},{"file":"DESARROLLO-12004-stderr-1690484191857.txt","computername":"DESARROLLO","pid":12004,"type":"stderr","created":1690484191857},{"file":"DESARROLLO-13140-stderr-1690484132490.txt","computername":"DESARROLLO","pid":13140,"type":"stderr","created":1690484132490},{"file":"DESARROLLO-14168-stderr-1690480737138.txt","computername":"DESARROLLO","pid":14168,"type":"stderr","created":1690480737138},{"file":"DESARROLLO-14168-stdout-1690480737126.txt","computername":"DESARROLLO","pid":14168,"type":"stdout","created":1690480737126},{"file":"DESARROLLO-14852-stderr-1690504586133.txt","computername":"DESARROLLO","pid":14852,"type":"stderr","created":1690504586133},{"file":"DESARROLLO-14852-stdout-1690504586127.txt","computername":"DESARROLLO","pid":14852,"type":"stdout","created":1690504586127},{"file":"DESARROLLO-15640-stderr-1690422685481.txt","computername":"DESARROLLO","pid":15640,"type":"stderr","created":1690422685481},{"file":"DESARROLLO-15640-stdout-1690422685475.txt","computername":"DESARROLLO","pid":15640,"type":"stdout","created":1690422685475},{"file":"DESARROLLO-1584-stderr-1690569337465.txt","computername":"DESARROLLO","pid":1584,"type":"stderr","created":1690569337465},{"file":"DESARROLLO-1584-stdout-1690569337456.txt","computername":"DESARROLLO","pid":1584,"type":"stdout","created":1690569337456},{"file":"DESARROLLO-15908-stderr-1690424887336.txt","computername":"DESARROLLO","pid":15908,"type":"stderr","created":1690424887336},{"file":"DESARROLLO-15908-stdout-1690424887329.txt","computername":"DESARROLLO","pid":15908,"type":"stdout","created":1690424887329},{"file":"DESARROLLO-2536-stderr-1690485264250.txt","computername":"DESARROLLO","pid":2536,"type":"stderr","created":1690485264250},{"file":"DESARROLLO-2536-stdout-1690485264245.txt","computername":"DESARROLLO","pid":2536,"type":"stdout","created":1690485264245},{"file":"DESARROLLO-4592-stderr-1690423415851.txt","computername":"DESARROLLO","pid":4592,"type":"stderr","created":1690423415851},{"file":"DESARROLLO-8908-stderr-1690424862736.txt","computername":"DESARROLLO","pid":8908,"type":"stderr","created":1690424862736},{"file":"DESARROLLO-8908-stdout-1690424862731.txt","computername":"DESARROLLO","pid":8908,"type":"stdout","created":1690424862731},{"file":"DESARROLLO-9316-stderr-1690484567018.txt","computername":"DESARROLLO","pid":9316,"type":"stderr","created":1690484567018}];
+        var lastUpdated = 1690569340071;
+        var date = new Date();
+
+        date.setTime(lastUpdated);
+        document.getElementById('lastUpdated').innerHTML = 'Index was last updated ' + date;
+
+        logFiles.sort(function (a, b) {
+            return b.created - a.created;
+        });
+
+        var logFilesTable = document.getElementById("logFilesTable");
+        for (var i = 0; i < logFiles.length; i++) {
+            var logFile = logFiles[i];
+            date.setTime(logFile.created);
+            var row = logFilesTable.insertRow(-1);
+            var computerNameCell = row.insertCell(0);
+            var pidCell = row.insertCell(1);
+            var typeCell = row.insertCell(2);
+            var dateCell = row.insertCell(3);
+            var logCell = row.insertCell(4);
+            computerNameCell.innerHTML = logFile.computername;
+            pidCell.innerHTML = logFile.pid.toString();
+            typeCell.innerHTML = logFile.type;
+            typeCell.setAttribute('class', logFile.type);
+            dateCell.innerHTML = date.toString();
+            logCell.innerHTML = '<a href="' + logFile.file + '">log</a>';
+        };
+
+    </script>
+</body>
+</html>

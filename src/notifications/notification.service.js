@@ -1,66 +1,177 @@
-const bcrypt = require('bcryptjs');
-
-const db = require('../_helpers/db');
+const { Expo } = require("expo-server-sdk");
+const db = require("../_helpers/db");
 
 module.exports = {
-    getAll,
-    getById,
-    create,
-    update,
-    delete: _delete
+  getAll,
+  getById,
+  create,
+  update,
+  delete: _delete,
+  send,
+  sendClave,
+  sendTipo,
 };
 
 async function getAll() {
-    return await db.User.findAll();
+  return await db.Notification.findAll();
 }
 
 async function getById(id) {
-    return await getUser(id);
+  return await getNotification(id);
 }
 
 async function create(params) {
-    // validate
-    if (await db.User.findOne({ where: { email: params.email } })) {
-        throw 'Email "' + params.email + '" is already registered';
-    }
+  // validate
+  if (await db.Notification.findOne({ where: { title: params.title } })) {
+    throw 'Title "' + params.title + '" is already registered';
+  }
 
-    const user = new db.User(params);
-    
-    // hash password
-    user.passwordHash = await bcrypt.hash(params.password, 10);
+  const notification = new db.Notification(params);
 
-    // save user
-    await user.save();
+  // save
+  await notification.save();
 }
 
 async function update(id, params) {
-    const user = await getUser(id);
+  const notification = await getNotification(id);
 
-    // validate
-    const usernameChanged = params.username && user.username !== params.username;
-    if (usernameChanged && await db.User.findOne({ where: { username: params.username } })) {
-        throw 'Username "' + params.username + '" is already taken';
-    }
-
-    // hash password if it was entered
-    if (params.password) {
-        params.passwordHash = await bcrypt.hash(params.password, 10);
-    }
-
-    // copy params to user and save
-    Object.assign(user, params);
-    await user.save();
+  // copy params to user and save
+  Object.assign(notification, params);
+  await notification.save();
 }
 
 async function _delete(id) {
-    const user = await getUser(id);
-    await user.destroy();
+  const notification = await getNotification(id);
+  await notification.destroy();
 }
 
 // helper functions
+async function getNotification(id) {
+  const notification = await db.Notification.findByPk(id);
+  if (!notification) throw "Notification not found";
+  return notification;
+}
 
-async function getUser(id) {
-    const user = await db.User.findByPk(id);
-    if (!user) throw 'User not found';
-    return user;
+// send notification
+async function send(id) {
+  let messages = [];
+  let _tokens = [];
+
+  const notification = await db.Notification.findOne({
+    where: { id },
+    attributes: ["title", "body"],
+  });
+
+  const tokens = await db.Token.findAll({
+    where: { status: "A" },
+    attributes: ["token"],
+  });
+
+  messages.push({
+    title: notification.get().title,
+    body: notification.get().body,
+    data: { withSome: id },
+    sound: "default",
+  });
+
+  _tokens = tokens.map((value) => value.get().token);
+
+  if (_tokens.length == 0) throw "Tokens not found";
+
+  await serverExpo(messages, _tokens);
+}
+
+// send notification clave
+async function sendClave(id, clave) {
+  let messages = [];
+  let _tokens = [];
+
+  const notification = await db.Notification.findOne({
+    where: { id },
+    attributes: ["title", "body"],
+  });
+
+  const tokens = await db.Token.findAll({
+    where: { status: "A", clave: clave },
+    attributes: ["token"],
+  });
+
+  messages.push({
+    title: notification.get().title,
+    body: notification.get().body,
+    data: { withSome: id },
+    sound: "default",
+  });
+
+  _tokens = tokens.map((value, index) => value.get().token);
+
+  if (_tokens.length == 0) throw "Tokens not found";
+
+  await serverExpo(messages, _tokens);
+}
+
+// send notification tipo de clave
+async function sendTipo(id, tipo) {
+  let messages = [];
+  let _tokens = [];
+
+  const notification = await db.Notification.findOne({
+    where: { id },
+    attributes: ["title", "body"],
+  });
+
+  const tokens = await db.Token.findAll({
+    where: { status: "A" },
+    attributes: ["token", "clave"],
+  });
+
+  _tokens = tokens
+    .filter((value) => value.clave.substring(0, 3) == tipo)
+    .map((value) => value.get().token);
+
+  if (_tokens.length == 0) throw "Tokens not found";
+
+  messages.push({
+    title: notification.get().title,
+    body: notification.get().body,
+    data: { withSome: id },
+    sound: "default",
+  });
+
+  await serverExpo(messages, _tokens);
+}
+
+async function serverExpo(message, somePushTokens) {
+  let expo = new Expo({ accessToken: process.env.EXPO_ACCESS_TOKEN });
+
+  let messages = [];
+  for (let pushToken of somePushTokens) {
+    if (!Expo.isExpoPushToken(pushToken)) {
+      console.error(`Push token ${pushToken} is not a valid Expo push token`);
+      continue;
+    }
+    messages.push({
+      to: pushToken,
+      body: message[0].body,
+      data: message[0].data,
+      sound: "default",
+    });
+  }
+
+  let chunks = expo.chunkPushNotifications(messages);
+  let tickets = [];
+  //console.log(chunks);
+
+  for (let chunk of chunks) {
+    try {
+      //console.log(chunk);
+      let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+      //console.log(ticketChunk);
+      tickets.push(...ticketChunk);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  console.log(tickets);
 }

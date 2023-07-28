@@ -5,12 +5,12 @@ const { dbName, dbConfig } = require("../config.json");
 
 module.exports = db = {};
 
-initialize();
+initialize(); 
 
 async function initialize() {
   const dialect = "mssql";
   const host = dbConfig.server;
-  const { userName, password } = dbConfig.authentication.options;
+  const { userName, password } = dbConfig.authentication.options; 
 
   // create db if it doesn't already exist
   await ensureDbExists(dbName);
@@ -24,6 +24,8 @@ async function initialize() {
 
   // init models and add them to the exported db object
   db.User = require("../users/user.model")(sequelize);
+  db.Notification = require("../notifications/notification.model")(sequelize);
+  db.Token = require("../tokens/token.model")(sequelize);
 
   // sync all models with database
   await sequelize.sync({ alter: true });
@@ -32,7 +34,7 @@ async function initialize() {
 async function ensureDbExists(dbName) {
   return new Promise((resolve, reject) => {
     const connection = new tedious.Connection(dbConfig);
-
+ 
     connection.on("connect", (err) => {
       if (err) {
         console.error(err);
@@ -41,8 +43,8 @@ async function ensureDbExists(dbName) {
 
     });
 
-    connection.connect()
-    /*connection.connect((err) => {
+   // connection.connect()
+    connection.connect((err) => {
       if (err) {
         console.error(err);
         reject(`Connection Failed: ${err.message}`);
@@ -60,6 +62,6 @@ async function ensureDbExists(dbName) {
       });
 
       connection.execSql(request);
-    });*/
+    });
   });
 }

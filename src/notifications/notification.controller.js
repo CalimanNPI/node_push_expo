@@ -1,77 +1,102 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Joi = require('joi');
+const Joi = require("joi");
 
-const validateRequest = require('../_middleware/validate-request');
-const Role = require('../_helpers/role');
-const userService = require('./notification.service');
+const validateRequest = require("../_middleware/validate-request");
+const notificationService = require("./notification.service");
 
 // routes
 
-router.get('/', getAll);
-router.get('/:id', getById);
-router.post('/', createSchema, create);
-router.put('/:id', updateSchema, update);
-router.delete('/:id', _delete);
+router.get("/", getAll);
+router.get("/:id", getById);
+router.post("/", createSchema, create);
+router.put("/:id", updateSchema, update);
+router.delete("/:id", _delete);
+router.get("/send/:id", send);
+router.get("/send/:id/:clave", sendClave);
+router.get("/send/:id/clave/:tipo", sendTipo);
 
 module.exports = router;
 
-// route functions 
-
+// route functions
 function getAll(req, res, next) {
-    userService.getAll()
-        .then(users => res.json(users))
-        .catch(next); 
+  notificationService
+    .getAll()
+    .then((notifications) => res.json(notifications))
+    .catch(next);
 }
 
 function getById(req, res, next) {
-    userService.getById(req.params.id)
-        .then(user => res.json(user))
-        .catch(next);
+  notificationService
+    .getById(req.params.id)
+    .then((notification) => res.json(notification))
+    .catch(next);
 }
 
 function create(req, res, next) {
-    userService.create(req.body)
-        .then(() => res.json({ message: 'User created' }))
-        .catch(next);
+  notificationService
+    .create(req.body)
+    .then(() => res.json({ message: "Notification created" }))
+    .catch(next);
 }
 
 function update(req, res, next) {
-    userService.update(req.params.id, req.body)
-        .then(() => res.json({ message: 'User updated' }))
-        .catch(next);
+  notificationService
+    .update(req.params.id, req.body)
+    .then(() => res.json({ message: "Notification updated" }))
+    .catch(next);
 }
 
 function _delete(req, res, next) {
-    userService.delete(req.params.id)
-        .then(() => res.json({ message: 'User deleted' }))
-        .catch(next);
+  notificationService
+    .delete(req.params.id)
+    .then(() => res.json({ message: "Notification deleted" }))
+    .catch(next);
+}
+
+function send(req, res, next) {
+  notificationService
+    .send(req.params.id)
+    .then(() => res.json({ message: "Notification enviada" }))
+    .catch(next);
+}
+
+function sendClave(req, res, next) {
+  notificationService
+    .sendClave(req.params.id, req.params.clave)
+    .then(() => res.json({ message: "Notification enviada" }))
+    .catch(next);
+}
+
+function sendTipo(req, res, next) {
+  notificationService
+    .sendTipo(req.params.id, req.params.tipo)
+    .then(() => res.json({ message: "Notification enviada" }))
+    .catch(next);
 }
 
 // schema functions
 
 function createSchema(req, res, next) {
-    const schema = Joi.object({
-        title: Joi.string().required(),
-        firstName: Joi.string().required(),
-        lastName: Joi.string().required(),
-        role: Joi.string().valid(Role.Admin, Role.User).required(),
-        email: Joi.string().email().required(),
-        password: Joi.string().min(6).required(),
-        confirmPassword: Joi.string().valid(Joi.ref('password')).required()
-    });
-    validateRequest(req, next, schema);
+  const schema = Joi.object({
+    title: Joi.string().required(),
+    body: Joi.string().required(),
+    description: Joi.string().required(),
+    image: Joi.string().required(),
+    expiry: Joi.date().required(),
+    type: Joi.string().required(),
+  });
+  validateRequest(req, next, schema);
 }
 
 function updateSchema(req, res, next) {
-    const schema = Joi.object({
-        title: Joi.string().empty(''),
-        firstName: Joi.string().empty(''),
-        lastName: Joi.string().empty(''),
-        role: Joi.string().valid(Role.Admin, Role.User).empty(''),
-        email: Joi.string().email().empty(''),
-        password: Joi.string().min(6).empty(''),
-        confirmPassword: Joi.string().valid(Joi.ref('password')).empty('')
-    }).with('password', 'confirmPassword');
-    validateRequest(req, next, schema);
+  const schema = Joi.object({
+    title: Joi.string().empty(""),
+    body: Joi.string().empty(""),
+    description: Joi.string().empty(""),
+    image: Joi.string().empty(""),
+    expiry: Joi.date().required(),
+    type: Joi.string().required(),
+  });
+  validateRequest(req, next, schema);
 }

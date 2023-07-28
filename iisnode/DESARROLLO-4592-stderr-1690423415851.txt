@@ -1,0 +1,12 @@
+Application has thrown an uncaught exception and is terminated:
+Error: listen EADDRINUSE: address already in use :::4000
+    at Server.setupListenHandle [as _listen2] (node:net:1372:16)
+    at listenInCluster (node:net:1420:12)
+    at Server.listen (node:net:1508:7)
+    at Function.listen (C:\Program Files\iisnode\www\node-push\node_modules\express\lib\application.js:635:24)
+    at Object.<anonymous> (C:\Program Files\iisnode\www\node-push\server.js:25:5)
+    at Module._compile (node:internal/modules/cjs/loader:1105:14)
+    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1159:10)
+    at Module.load (node:internal/modules/cjs/loader:981:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:822:12)
+    at Module.require (node:internal/modules/cjs/loader:1005:19)

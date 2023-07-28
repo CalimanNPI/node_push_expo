@@ -1,14 +1,19 @@
 {
-  "dbName": "users-notification",
+  "secret":"CDCAC",
+  "dbName": "notification-api",
   "dbConfig": {
     "server": "DESARROLLO",
-    "options": {},
+    "options": {
+      "port": 1433, 
+      "trustServerCertificate": true
+    },
     "authentication": {
       "type": "default",
-      "options": {
-        "userName": "",
-        "password": ""
+      "options": {  
+        "userName": "sa",
+        "password": "master"
       }
     }
-  }
+  }   
 }
+     
