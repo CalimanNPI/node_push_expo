@@ -14,8 +14,8 @@ router.post("/register", createSchema, create);
 router.get("/", authorize(), getAll);
 router.get("/:id", authorize(), getById);
 router.get("/current", authorize(), getCurrent);
-router.put("/:id", authorize(), updateSchema, update);
-router.delete("/:id", authorize(), _delete);
+router.post("/:id", authorize(), updateSchema, update);
+router.get("/delete/:id", authorize(), _delete);
 
 module.exports = router;
 

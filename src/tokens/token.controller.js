@@ -10,8 +10,8 @@ const notificationService = require("./token.service");
 router.get("/", getAll);
 router.get("/:id", getById);
 router.post("/", createSchema, create);
-router.put("/:id", updateSchema, update);
-router.delete("/:id", _delete);
+router.post("/:id", updateSchema, update);
+router.get("/delete/:id", _delete);
 
 module.exports = router;
 

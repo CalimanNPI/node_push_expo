@@ -50,7 +50,7 @@ async function ensureDbExists(dbName) {
         reject(`Connection Failed: ${err.message}`);
       }
 
-      const createDbQuery = `IF NOT EXISTS(SELECT * FROM sys.databases WHERE name = '${dbName}') CREATE DATABASE [${dbName}];`;
+     /* const createDbQuery = `IF NOT EXISTS(SELECT * FROM sys.databases WHERE name = '${dbName}') CREATE DATABASE [${dbName}];`;
       const request = new tedious.Request(createDbQuery, (err) => {
         if (err) {
           console.error(err);
@@ -59,9 +59,9 @@ async function ensureDbExists(dbName) {
 
         // query executed successfully
         resolve();
-      });
+      });*/
 
-      connection.execSql(request);
+      //connection.execSql(request);
     });
   });
 }
